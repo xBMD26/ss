@@ -1,0 +1,107 @@
+#include <stdio.h>
+#include <string.h>
+int main() {
+    FILE *fp_in, *fp_nam, *fp_def, *fp_arg, *fp_ou;
+    int len, i, pos = 1;
+    char arg[20], op[20], label[20], macnam[20], mne1[20], op1[20], str1[10], str2[20];
+
+    fp_in = fopen("input.txt", "r");
+    fp_nam = fopen("namtab.txt", "w+");
+    fp_def = fopen("deftab.txt", "w+");
+    fp_arg = fopen("argtab.txt", "w+");
+    fp_ou = fopen("out.txt", "w+");
+    if (!fp_in || !fp_nam || !fp_def || !fp_arg || !fp_ou) {
+        printf("Error opening files.\n");
+        return 0;
+    }
+
+    fscanf(fp_in, "%s\t%s\t%s", label, mne1, op);
+    while (strcmp(mne1, "END") != 0) {
+        if (strcmp(mne1, "MACRO") == 0) {
+            fprintf(fp_nam, "%s\n", label);
+            fseek(fp_nam, SEEK_SET, 0);
+            fprintf(fp_def, "%s\t%s\n", label, op);
+            fscanf(fp_in, "%s\t%s\t%s", label, mne1, op);
+
+            while (strcmp(mne1, "MEND") != 0) {
+                if (op[0] == '&') {
+                    sprintf(str1, "%d", pos);
+                    sprintf(str2, "?%s", str1);
+                    strcpy(op, str2);
+                    pos++;
+                    fprintf(fp_def, "%s\t%s\n", mne1, op);
+                } else {
+                    fprintf(fp_def, "%s\t%s\n", mne1, op);
+                }
+                fscanf(fp_in, "%s\t%s\t%s", label, mne1, op);
+            }
+
+            fprintf(fp_def, "%s\n", mne1); 
+        } else {
+            fseek(fp_nam, SEEK_SET, 0);
+            int macro_found = 0;
+
+            while (fscanf(fp_nam, "%s", macnam) != EOF) {
+                if (strcmp(mne1, macnam) == 0) {
+                    macro_found = 1;
+                    len = strlen(op);
+                    for (i = 0; i < len; i++) {
+                        if (op[i] != ',') {
+                            fprintf(fp_arg, "%c", op[i]);
+                        } else {
+                            fprintf(fp_arg, "\n");
+                        }
+                    }
+                    fprintf(fp_arg, "\n");
+
+                    fseek(fp_def, SEEK_SET, 0);
+                    fprintf(fp_ou, "**\t.%s\t%s\n", mne1, op);
+
+                    fscanf(fp_def, "%s\t%s", mne1, op1);
+                    fseek(fp_arg, SEEK_SET, 0);
+
+                    while (strcmp(mne1, "MEND") != 0) {
+                        if (op1[0] == '?') {
+                            fscanf(fp_arg, "%s", arg);
+                            fprintf(fp_ou, "**\t%s\t%s\n", mne1, arg);
+                            printf("**\t%s\t%s\n", mne1, arg);
+                        } else {
+                            fprintf(fp_ou, "**\t%s\t%s\n", mne1, op1);
+                            printf("**\t%s\t%s\n", mne1, op1);
+                        }
+                        fscanf(fp_def, "%s\t%s", mne1, op1);
+                    }
+                    break;
+                }
+            }
+
+            if (!macro_found) {
+                fprintf(fp_ou, "%s\t%s\t%s\n", label, mne1, op);
+                printf("%s\t%s\t%s\n", label, mne1, op);
+            }
+        }
+        fscanf(fp_in, "%s\t%s\t%s", label, mne1, op);
+    }
+
+    fprintf(fp_ou, "%s\t%s\t%s\n", label, mne1, op);
+    printf("%s\t%s\t%s\n", label, mne1, op);
+
+    fclose(fp_in);
+    fclose(fp_nam);
+    fclose(fp_def);
+    fclose(fp_arg);
+    fclose(fp_ou);
+}
+
+
+
+SAMPLE START 1000
+EX1    MACRO &A,&B
+**     LDA   &A
+**     STA   &B
+**     CLEAR C
+**     MEND  **
+**     EX1   N1,N2
+N1     RESW  1
+N2     RESW  1
+**     END   **
