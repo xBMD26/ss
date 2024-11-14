@@ -1,0 +1,710 @@
+PALINDROME
+.model small
+.stack 100
+.data
+  string dw ?
+  msg db 13,10,"enter string:$"
+  msg1 db 0ah,0dh, "Palindrome$"
+  msg2 db 0ah,0dh, "not palindrome$"
+
+read macro msg
+  MOV dx,offset msg
+  MOV ah,3fh
+  Int 21h
+endm
+
+print macro msg
+  MOV dx,offset msg
+  MOV ah,09h
+  Int 21h
+endm
+
+.code
+  MOV ax,@data
+  MOV ds,ax
+  print msg
+  read string
+
+  MOV si,offset string
+Loop1:
+  MOV ax,[si]
+  cmp al,"$"
+  je label1
+  inc si
+  jmp Loop1
+
+label1:
+  MOV di,offset string
+  dec si
+Loop2:
+  cmp si,di
+  jl out1
+  MOV ax,[si]
+  MOV bx,[di]
+  cmp al,bl
+  jne out2
+  dec si
+  inc di
+  jmp Loop2
+
+out1:
+  print msg1
+  jmp exit
+
+out2:
+  print msg2
+
+exit:
+  MOV ah,4ch
+  Int 21h
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CALCULATOR
+.model small
+.stack 64
+dispm macro msg
+  mov dx,offset msg
+  mov ah,09h
+  int 21h
+endm
+
+dispn macro al
+  mov dl,al
+  mov ah,02h
+  int 21h
+endm
+
+readno macro num
+  mov ah,01h
+  int 21h
+  sub al,30h
+  mov num,al
+endm
+
+.data
+  msg1 db 0ah,"Calculator 1.Sum 2.Product 3.Subtraction 4.Quotient 5.Exit$"
+  msg2 db 0ah,"Enter the choice:$"
+  msg3 db 0ah,"Enter the number(1):$"
+  msg4 db 0ah,"Enter the number(2):$"
+  msg5 db 0ah,"The sum is:$"
+  msg6 db 0ah,"The product is:$"
+  msg7 db 0ah,"The difference is:$"
+  msg8 db 0ah,"The quotient is:$"
+  num1 db ?
+  num2 db ?
+  ch1 db ?
+
+.code
+start:
+  mov ax,@data
+  mov ds,ax
+  dispm msg1
+  dispm msg2
+  readno ch1
+  cmp ch1,05
+  jz exit
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ dispm msg3
+  readno num1
+  dispm msg4
+  readno num2
+
+  cmp ch1,01
+  jz addn
+  cmp ch1,02
+  jz pron
+  cmp ch1,03
+  jz subn
+  cmp ch1,04
+  jz divn
+
+exit:
+  mov ah,4ch
+  int 21h
+
+addn:
+  dispm msg5
+  mov al,num1
+  add al,num2
+  add al,30h
+  dispn al
+  jmp start
+
+pron:
+  dispm msg6
+  mov al,num1
+  mul num2
+  add al,30h
+  dispn al
+  jmp start
+
+subn:
+  dispm msg7
+  mov al,num1
+  sub al,num2
+  add al,30h
+  dispn al
+  jmp start
+
+divn:
+  dispm msg8
+  mov ah,00h
+  mov al,num1
+  div num2
+  add al,30h
+  dispn al
+  jmp start
+end
+
+
+
+
+
+MASM FACTORIAL 
+.model small
+.stack 100h
+
+.data
+    msg1 db "Enter a number: $"
+    msg2 db "The factorial is: $"
+    num db 0
+    result db 1
+
+.code
+main:
+    mov ax, @data
+    mov ds, ax
+
+    mov ah, 09h
+    mov dx, offset msg1
+    int 21h
+
+    mov ah, 01h
+    int 21h
+    sub al, '0'
+    mov num, al
+
+    mov al, num
+    mov bl, al
+
+factorial_loop:
+    mov cl, result
+    mul bl
+    mov result, al
+
+    dec bl
+    jnz factorial_loop
+
+    mov ah, 09h
+    mov dx, offset msg2
+    int 21h
+
+    mov al, result
+    add al, '0'
+
+    mov ah, 02h
+    mov dl, al
+    int 21h
+
+    mov ah, 4Ch
+    int 21h
+
+end main
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+MASM SUM OF NUMBERS
+.model small
+.stack 100h
+
+.data
+    msg1 db "Enter the first number: $"
+    msg2 db "Enter the second number: $"
+    msg3 db "The sum is: $"
+    num1 db 0
+    num2 db 0
+    result db 0
+
+.code
+main:
+    mov ax, @data
+    mov ds, ax
+
+    mov ah, 09h
+    mov dx, offset msg1
+    int 21h
+
+    mov ah, 01h
+    int 21h
+    sub al, 30h
+    mov num1, al
+
+    mov ah, 09h
+    mov dx, offset msg2
+    int 21h
+
+    mov ah, 01h
+    int 21h
+    sub al, 30h
+    mov num2, al
+
+    mov al, num1
+    add al, num2
+    mov result, al
+
+    mov ah, 09h
+    mov dx, offset msg3
+    int 21h
+
+    add al, 30h
+    mov ah, 02h
+    mov dl, al
+    int 21h
+
+    mov ah, 4Ch
+    int 21h
+
+end main
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+MASM ODD OR EVEN 
+.model small
+.stack 100h
+
+.data
+    msg1 db "Enter a number: $"
+    msg_even db "The number is even.$"
+    msg_odd db "The number is odd.$"
+
+.code
+main:
+    mov ax, @data
+    mov ds, ax
+
+    mov ah, 09h
+    mov dx, offset msg1
+    int 21h
+
+    mov ah, 01h
+    int 21h
+    sub al, 30h
+    mov bl, al
+
+    test bl, 1
+    jz even_number
+
+odd_number:
+    mov ah, 09h
+    mov dx, offset msg_odd
+    int 21h
+    jmp exit
+
+even_number:
+    mov ah, 09h
+    mov dx, offset msg_even
+    int 21h
+
+exit:
+    mov ah, 4Ch
+    int 21h
+
+end main
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+MASM REVERSE+PALIN
+.model small
+.stack 100h
+
+.data
+    msg db 13,10,"Enter a string: $"
+    msg_palindrome db 13,10,"Palindrome$"
+    msg_not_palindrome db 13,10,"Not palin$"
+    msg_reversed db 13,10,"Rev string: $"
+    input_buffer db 20, 0, 20 dup('$') 
+
+print macro msg
+    MOV dx, offset msg
+    MOV ah, 09h
+    int 21h
+endm
+
+read macro msg
+    MOV dx, offset msg
+    MOV ah, 0Ah    
+    int 21h
+endm
+
+.code
+main:
+    MOV ax, @data
+    MOV ds, ax
+
+    print msg
+
+    read input_buffer
+
+    MOV si, offset input_buffer + 1  
+    MOV al, [si]                     
+    MOV bl, al                       
+    MOV di, si
+    ADD di, bl                       
+
+    ; ------ Start Palindrome Check ------
+    dec di                           
+    MOV si, offset input_buffer + 2  
+
+palindrome_check:
+    cmp si, di                       
+    jge check_palindrome_done
+
+    MOV al, [si]                     
+    MOV dl, [di]                     
+    cmp al, dl                       
+    jne not_palindrome               
+
+    inc si                           
+    dec di                           
+    jmp palindrome_check
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+check_palindrome_done:
+    jz print_palindrome
+    print msg_not_palindrome
+    jmp reverse_string
+
+not_palindrome:
+    print msg_not_palindrome
+    jmp reverse_string
+
+print_palindrome:
+    print msg_palindrome
+    ; ------ End Palindrome Check ------
+
+reverse_string:
+    ; ------ Start String Reversing ------
+    print msg_reversed
+    MOV si, offset input_buffer + 2   
+    MOV di, offset input_buffer + 2   
+    ADD di, bl                        
+    dec di                            
+
+reverse_loop:
+    cmp si, di                        
+    jge reverse_done
+
+    MOV al, [si]
+    MOV dl, [di]
+    MOV [si], dl
+    MOV [di], al
+
+    inc si
+    dec di
+    jmp reverse_loop
+
+reverse_done:
+    MOV si, offset input_buffer + 2
+    MOV ah, 09h
+    lea dx, input_buffer + 2
+    int 21h
+    ; ------ End String Reversing ------
+
+    MOV ah, 4Ch
+    int 21h
+
+end main
+MASM SQUARE ROOT
+.model small
+.stack 100h
+
+.data
+    msg1 db "Enter a number: $"
+    msg2 db "The square root is: $"
+    num db 0
+    odd db 1
+    counter db 0
+ 
+.code
+main:
+    mov ax, @data
+    mov ds, ax
+
+    mov ah, 09h
+    mov dx, offset msg1
+    int 21h
+
+    mov ah, 01h
+    int 21h
+    sub al, '0'
+    mov num, al
+
+    mov al, num
+    mov bl, odd
+    mov counter, 0
+
+subtract_loop:
+    cmp al, bl
+    jl done
+    sub al, bl
+    add bl, 2
+    inc counter
+    jmp subtract_loop
+
+done:
+    mov ah, 09h
+    mov dx, offset msg2
+    int 21h
+
+    mov al, counter
+    add al, '0'
+    mov ah, 02h
+    mov dl, al
+    int 21h
+
+    mov ah, 4Ch
+    int 21h
+
+end main
+
+
+
